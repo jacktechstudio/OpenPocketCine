@@ -319,7 +319,7 @@ class ScopeGeometryTest {
         assertEquals(MonitorFalseColorSelection.STOPS, MonitorFalseColorSelection.fromMenuLabel("Video"))
         assertEquals(MonitorFalseColorSelection.STOPS, MonitorFalseColorSelection.fromPersisted("PStops"))
         assertEquals(MonitorFalseColorSelection.STOPS, MonitorFalseColorSelection.fromPersisted("ZC Stops"))
-        assertEquals("Video", MonitorFalseColorSelection.STOPS.menuLabel)
+        assertEquals("视频", MonitorFalseColorSelection.STOPS.menuLabel)
         val transfer = MonitorTransfer.DLOG2
         val stops = FalseColorReference.segments(MonitorFalseColorSelection.STOPS, transfer, ceiling = DjiScopeExposureCeiling.UNOBSERVED)
         assertEquals(9, stops.size)
@@ -330,7 +330,7 @@ class ScopeGeometryTest {
         assertEquals(1.0, stops.last().upperFraction, 1e-9)
         assertTrue(stops[2].upperFraction < stops[3].lowerFraction)
         assertEquals(
-            listOf("crush", "18%", "skin", "clip"),
+            listOf("压黑", "18%", "肤色", "剪切"),
             FalseColorReference.axisLabels(MonitorFalseColorSelection.STOPS),
         )
         assertEquals("D-Log2", FalseColorReference.curveKeyLabel(MonitorTransfer.DLOG2))
@@ -388,11 +388,11 @@ class ScopeGeometryTest {
         assertEquals("clip", rec709.last().label)
 
         assertEquals(
-            listOf("−6", "−4", "−2", "18%", "+2", "+4", "+6", "+8", "clip"),
+            listOf("−6", "−4", "−2", "18%", "+2", "+4", "+6", "+8", "剪切"),
             FalseColorReference.sceneStopMarkers(MonitorTransfer.DLOG2, ceiling = DjiScopeExposureCeiling.UNOBSERVED).map { it.label },
         )
         assertEquals(
-            listOf("−6", "−4", "−2", "18%", "clip"),
+            listOf("−6", "−4", "−2", "18%", "剪切"),
             FalseColorReference.sceneStopMarkers(MonitorTransfer.REC709, ceiling = DjiScopeExposureCeiling.UNOBSERVED).map { it.label },
         )
         assertTrue(FalseColorReference.axisLabels(MonitorFalseColorSelection.SCENE_STOPS).isEmpty())

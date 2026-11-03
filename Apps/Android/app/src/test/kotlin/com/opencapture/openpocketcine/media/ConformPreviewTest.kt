@@ -68,7 +68,7 @@ class ConformPreviewTest {
         assertTrue(availability.targets.contains(25.0))
         assertEquals(0.5, MonitorConformPreview.speed(50.0, 25.0))
         assertEquals("25 fps · 50%", MonitorConformPreview.targetLabel(50.0, 25.0))
-        assertEquals("Conform 50 fps to", MonitorConformPreview.menuHeader(50.0))
+        assertEquals("将 50 fps 素材按以下帧率回放", MonitorConformPreview.menuHeader(50.0))
     }
 
     @Test

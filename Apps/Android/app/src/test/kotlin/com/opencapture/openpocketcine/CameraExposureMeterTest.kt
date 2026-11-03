@@ -48,7 +48,7 @@ class CameraExposureMeterTest {
         assertEquals("—", recovering.label)
         assertNull(recovering.needleFraction)
         assertNull(recovering.stops)
-        assertEquals("Camera exposure meter, unavailable", recovering.accessibilityLabel)
+        assertEquals("无法读取相机曝光指示", recovering.accessibilityLabel)
         // Availability depends on camera telemetry and recovery, with no decoder-picture input.
         val fresh = MonitorOperatorExposureReading(0x19)
         assertEquals("+3.0", fresh.label)
@@ -62,7 +62,7 @@ class CameraExposureMeterTest {
             assertNull(meter.stops)
             assertNull(meter.needleFraction)
             assertEquals("—", meter.label)
-            assertEquals("Camera exposure meter, unavailable", meter.accessibilityLabel)
+            assertEquals("无法读取相机曝光指示", meter.accessibilityLabel)
         }
         val missing = StatusExtras.applyExpo(ByteArray(15).apply { this[6] = 0x10 }, prior)
         assertEquals(0x10, missing.evComp)

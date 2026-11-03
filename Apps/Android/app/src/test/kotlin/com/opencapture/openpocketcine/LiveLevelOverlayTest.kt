@@ -40,9 +40,9 @@ class LiveLevelOverlayTest {
         assertEquals("\u2014", MonitorLevelGeometry.label(null, "\u2014"))
         assertEquals("+0.0°", MonitorLevelGeometry.label(0.04))
         assertEquals("-2.4°", MonitorLevelGeometry.label(-2.35))
-        assertEquals("Level, No level data",
+        assertEquals("水平仪，无水平姿态数据",
             MonitorLevelGeometry.accessibilityLabel(MonitorLevelDisplay.Unavailable, WorldLevelSnap.NO_LEVEL_DATA))
-        assertEquals("Level, roll +1.5°, tilt -0.3°",
+        assertEquals("水平仪，横滚 +1.5°，俯仰 -0.3°",
             MonitorLevelGeometry.accessibilityLabel(MonitorLevelDisplay.Gauges(1.5, -0.3), WorldLevelSnap.NO_LEVEL_DATA))
     }
 }

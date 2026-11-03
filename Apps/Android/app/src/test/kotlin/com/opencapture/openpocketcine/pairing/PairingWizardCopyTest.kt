@@ -56,12 +56,12 @@ class PairingWizardCopyTest {
         val camera = NearbyCamera("n1", name = "OsmoPocket3-4D5E", model = "Osmo Pocket 3", routes = setOf(RouteKind.CAMERA_ACCESS_POINT))
         val found = FoundCamera("n1", "BB", "OsmoPocket3-4D5E", CameraModel.fromJson("""{"name":"Osmo Pocket 3","family":"pocket","verified":true}"""), 0x20)
         assertEquals(
-            NearbyCardCopy("OsmoPocket3-4D5E", "Pocket · Osmo Pocket 3 · nearby", "请在相机上确认配对"),
+            NearbyCardCopy("OsmoPocket3-4D5E", "Pocket · Osmo Pocket 3 · 附近", "请在相机上确认配对"),
             AppModel.nearbyCard(camera, found),
         )
         val nano = FoundCamera("n2", "CC", "DJI Camera", CameraModel(name = "Osmo Nano", family = "nano"), null)
         assertEquals(
-            NearbyCardCopy("Osmo Nano", "Nano · nearby · 未验证", "请在相机上确认配对"),
+            NearbyCardCopy("Osmo Nano", "Nano · 附近 · 未验证", "请在相机上确认配对"),
             AppModel.nearbyCard(NearbyCamera("n2", name = "Osmo Nano", model = "Osmo Nano", routes = setOf(RouteKind.CAMERA_ACCESS_POINT)), nano),
         )
     }

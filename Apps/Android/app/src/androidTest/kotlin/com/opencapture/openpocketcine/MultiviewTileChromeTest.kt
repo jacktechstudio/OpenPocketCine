@@ -281,7 +281,7 @@ class MultiviewTileChromeTest {
                                     Box(Modifier.size(width.dp, height.dp).onGloballyPositioned { coordinates ->
                                         val origin = coordinates.boundsInWindow()
                                         android.graphics.RectF(origin.left, origin.top, origin.right, origin.bottom).roundOut(expectedViewport)
-                                        // 相机设置 reuse Live View's trailing gimbal inspector frame,
+                                        // Camera settings reuse Live View's trailing gimbal inspector frame,
                                         // in whole pixels as Compose lays it out (dp sizes round to px).
                                         val panel = MonitorInspectorPolicy.frame(width, height, trailing = true)
                                         val viewport = coordinates.size
@@ -568,7 +568,7 @@ class MultiviewTileChromeTest {
             if (ready) return
             SystemClock.sleep(32)
         }
-        error("相机设置 binding did not update")
+        error("Camera settings binding did not update")
     }
 }
 
