@@ -41,12 +41,12 @@ class LiveChromeSemanticsTest {
      */
     @Test fun readoutChipsSpeakOneNamedSentence() {
         val cases: List<Pair<String, @Composable () -> Unit>> = listOf(
-            "Recording, 2 minutes 14 seconds" to @Composable {
+            "正在录制，2 分钟 14 秒" to @Composable {
                 MonitorRecordingReadout(MonitorStatusPresentation(recording = true, elapsedSeconds = 134))
             },
-            "Standby" to @Composable { MonitorRecordingReadout(MonitorStatusPresentation(recording = false, elapsedSeconds = 0)) },
-            "Timecode not available" to @Composable { MonitorClock(timecode = null) },
-            "Timecode 01:23:45:12" to @Composable { MonitorClock(timecode = "01:23:45:12") },
+            "待机" to @Composable { MonitorRecordingReadout(MonitorStatusPresentation(recording = false, elapsedSeconds = 0)) },
+            "无时间码" to @Composable { MonitorClock(timecode = null) },
+            "时间码 01:23:45:12" to @Composable { MonitorClock(timecode = "01:23:45:12") },
         )
         for ((expected, content) in cases) {
             assertEquals(listOf(expected), render(content), "readout should speak \"$expected\" as one node")
@@ -56,7 +56,7 @@ class LiveChromeSemanticsTest {
     /** The link gauge toggles its value on tap, so its shape must merge rather than leak child text. */
     @Test fun linkGaugeDoesNotLeakItsChildText() {
         assertEquals(
-            listOf("Live link 3 of 4 delivery bars, feed 23.98 frames per second"),
+            listOf("监看链路：链路质量 3/4 格，图传：每秒 23.98 帧"),
             render { MonitorTelemetry(signalBars = 3, fps = "23.98", power = emptyList(), horizontal = true) },
             "readout chips must merge; a stray value node means the convention leaks",
         )
@@ -72,7 +72,7 @@ class LiveChromeSemanticsTest {
                 onClick = {},
             )
         }
-        assertEquals(listOf("Waveform, on. Hold for options"), spoken)
+        assertEquals(listOf("波形图，开启。长按显示选项"), spoken)
     }
 
     /**
@@ -81,7 +81,7 @@ class LiveChromeSemanticsTest {
      * after something the tree no longer offers.
      */
     @Test fun aClearedAssistToolStillOffersTapAndHold() {
-        val actions = actionsOf("Waveform, on. Hold for options") {
+        val actions = actionsOf("波形图，开启。长按显示选项") {
             com.opencapture.opencine.cameracontrols.AssistToolCell(
                 tool = MonitorAssistTool.WAVE,
                 isOn = true,
@@ -105,11 +105,10 @@ class LiveChromeSemanticsTest {
                     onClick = {},
                 )
             }
-            assertEquals(listOf("${tool.title}, off"), spoken, "tool $tool")
-            // LUT is an initialism the operator says aloud; the rest must not
-            // fall back to the on-screen abbreviation.
+            assertEquals(listOf("${tool.title}，关闭"), spoken, "tool $tool")
+            // Some Chinese tool names fit the chip in full. Never announce an internal abbreviation.
             if (tool != MonitorAssistTool.LUT) {
-                assertTrue(tool.title != tool.chipLabel, "tool $tool still speaks its chip label")
+                assertTrue(tool.title != tool.name, "tool $tool speaks its internal identifier")
             }
         }
     }

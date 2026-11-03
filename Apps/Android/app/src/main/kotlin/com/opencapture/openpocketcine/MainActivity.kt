@@ -235,20 +235,20 @@ internal fun pairingWizard(
     radioOn: Boolean,
 ) = PairingWizard(
     bodies = listOf(
-        "Turn the camera on and keep the phone nearby. Pocket and Nano both appear. Choose the one you want.",
-        "If the camera shows Approve, tap it on that camera's screen. First-time pairing can wait up to 90 seconds.",
-        "We read the camera's network over Bluetooth, then join its Wi-Fi for you.",
-        "Exposure, LUTs and scopes go live as soon as the video link is up.",
+        "打开相机，将手机靠近相机。从列表中选择要连接的 Pocket 或 Nano。",
+        "如果相机提示配对，请在相机屏幕上确认。首次配对最长可能需要 90 秒。",
+        "手机将通过蓝牙读取相机的网络信息，然后连接相机的 Wi-Fi。",
+        "图传连接后，即可调整曝光、加载 LUT 并查看示波器。",
     ),
-    approveLines = listOf("Look for an Approve / pairing prompt", "Tap it on the camera screen"),
-    joinLines = listOf("Leave the camera on. It brings up its own Wi-Fi", "On 5.8 GHz that can take about a minute; we keep trying"),
+    approveLines = listOf("留意相机上的配对提示", "在相机屏幕上确认配对"),
+    joinLines = listOf("保持相机开机，等待相机启动 Wi-Fi", "5.8 GHz 网络启动可能需要约 1 分钟，手机会自动重试"),
     label = label,
     joinedNetwork = joinedNetwork,
     vpnActive = vpnActive,
     blocker = when {
-        !granted && needsSettings -> "Open Settings"
-        !granted -> "Allow ${DiscoveryPermissions.settingsName(DiscoveryPermissions.discovery()).lowercase()}"
-        !radioOn -> "Turn Bluetooth on"
+        !granted && needsSettings -> "打开设置"
+        !granted -> "授予${DiscoveryPermissions.settingsName(DiscoveryPermissions.discovery())}权限"
+        !radioOn -> "开启蓝牙"
         else -> null
     },
 )

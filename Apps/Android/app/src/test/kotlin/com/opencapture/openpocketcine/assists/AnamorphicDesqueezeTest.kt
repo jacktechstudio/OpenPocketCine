@@ -28,7 +28,7 @@ class AnamorphicDesqueezeTest {
         assertEquals(1.33, state.desqueezeFactor)
         assertEquals(16f / 9f, state.presentedAspect(16f / 9f))
         assertEquals(MonitorDesqueezeDirection.HORIZONTAL, state.desqueezeDirection)
-        assertEquals("DE-SQ", MonitorAssistTool.DESQ.chipLabel)
+        assertEquals("还原", MonitorAssistTool.DESQ.chipLabel)
         assertEquals(MonitorAssistTool.DESQ, MonitorAssistTool.fromPersisted("DE-SQ"))
         assertEquals(MonitorAssistTool.DESQ, MonitorAssistTool.fromPersisted("DESQ"))
         assertTrue(MonitorAssistTool.DESQ in MonitorAssistTool.settingsCases)

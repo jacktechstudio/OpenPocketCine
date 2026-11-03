@@ -5,6 +5,13 @@ unless a row lists an exception. GPU backends, Bluetooth stacks, and OS APIs may
 diverge. Shipping a one-platform operator-visible change without a row here is
 incomplete.
 
+## Simplified Chinese Android edition
+
+This fork uses Simplified Chinese for the Android operating interface and
+pins its matching OpenCine camera and monitor components. The Android
+application ID is `com.opencapture.openpocketcine.zhcn` so it can be installed
+alongside the upstream app. The iOS interface follows upstream.
+
 ## Shared cameras and pairing (SHELL-02)
 
 Both shells use OpenCine's cameras model and camera/pair pages. Nearby selection

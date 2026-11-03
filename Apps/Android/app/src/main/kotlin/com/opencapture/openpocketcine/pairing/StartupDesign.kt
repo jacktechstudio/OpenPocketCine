@@ -22,6 +22,6 @@ fun ConnectionPhase.isBusy(): Boolean =
 object StartupConnectionCopy {
     // Frame Tap blocks pairing and connecting; DJI Mimo on any nearby phone holds the camera.
     // Same wording as iOS. Failure cards add `DjiFailures.DJI_APPS_TIP` themselves.
-    const val PAIRING_PRECHECK = "Before pairing, turn off DJI Frame Tap and force quit DJI Mimo."
-    const val STILL_LOOKING = "${DjiFailures.DJI_APPS_TIP} Make sure the camera is on and activated, then move closer."
+    const val PAIRING_PRECHECK = "配对前，请关闭 DJI FrameTap 取景遥控器，并强制退出 DJI Mimo。"
+    const val STILL_LOOKING = "${DjiFailures.DJI_APPS_TIP}请确认相机已开机并已激活，然后将手机靠近相机。"
 }

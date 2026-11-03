@@ -184,14 +184,14 @@ class MultiviewTileChromeTest {
                         }
                     }
                 }
-                val layoutTitle = if (arrangement == MultiviewArrangement.GRID) "Show Focused stage" else "Show Grid"
+                val layoutTitle = if (arrangement == MultiviewArrangement.GRID) "显示主机位视图" else "显示分屏视图"
                 awaitNode(layoutTitle)
-                click(awaitNode("Show Multiview tools"))
-                awaitNode("Collapse Multiview tools")
+                click(awaitNode("显示多机监看工具"))
+                awaitNode("收起多机监看工具")
                 // Expanded, the four tools fill two columns of two, ranked FOCUS/GRID, LUT, FIT, CAM.
-                val titles = listOf(layoutTitle, "Toggle Auto LUT for all cameras", "Fill frame with feed", "Camera settings")
+                val titles = listOf(layoutTitle, "切换所有机位的自动 LUT", "取景画面铺满屏幕", "相机设置")
                 var hits = titles.map { title -> android.graphics.Rect().also { awaitNode(title).getBoundsInScreen(it) } }
-                val lane = android.graphics.Rect().also { awaitNode("Collapse Multiview tools").getBoundsInScreen(it) }
+                val lane = android.graphics.Rect().also { awaitNode("收起多机监看工具").getBoundsInScreen(it) }
                 fun x(dp: Float) = origin.x + dp * scale
                 fun y(dp: Float) = origin.y + dp * scale
                 val cell = layout.controlCellSize
@@ -281,7 +281,7 @@ class MultiviewTileChromeTest {
                                     Box(Modifier.size(width.dp, height.dp).onGloballyPositioned { coordinates ->
                                         val origin = coordinates.boundsInWindow()
                                         android.graphics.RectF(origin.left, origin.top, origin.right, origin.bottom).roundOut(expectedViewport)
-                                        // Camera settings reuse Live View's trailing gimbal inspector frame,
+                                        // 相机设置 reuse Live View's trailing gimbal inspector frame,
                                         // in whole pixels as Compose lays it out (dp sizes round to px).
                                         val panel = MonitorInspectorPolicy.frame(width, height, trailing = true)
                                         val viewport = coordinates.size
@@ -299,14 +299,14 @@ class MultiviewTileChromeTest {
                         }
                     }
                 }
-                awaitNode("Camera settings")
+                awaitNode("相机设置")
                 awaitCondition { stage.tiles[0].controlsModel != null }
                 SystemClock.sleep(350) // Measure after the native reveal transition settles.
                 val panel = android.graphics.Rect(expectedPanel)
                 val screen = android.graphics.Rect(expectedViewport)
                 assertTrue(panel.left > screen.left && panel.right == screen.right, "Side panel must attach to the trailing edge")
                 assertTrue(panel.top >= screen.top && panel.bottom <= screen.bottom)
-                for (label in listOf("Close camera settings", "A · Camera 0", "B · Camera 1", "ISO")) {
+                for (label in listOf("关闭相机设置", "A · Camera 0", "B · Camera 1", "ISO")) {
                     val action = android.graphics.Rect().also { awaitNode(label).getBoundsInScreen(it) }
                     assertTrue(panel.contains(action), "$label $action must stay inside the side panel $panel")
                 }
@@ -358,12 +358,12 @@ class MultiviewTileChromeTest {
         name = name, model = "Osmo Pocket 4", format = "4K · 30p · Normal", battery = 73, storage = "8 GB",
         timecode = "01:02:03", tally = "REC 1:24", recording = true, status = status,
         actions = listOf(
-            MultiviewStageAction(MultiviewStageAction.LIVE_VIEW, "Open Live View"),
-            MultiviewStageAction("record", "Stop recording", MultiviewStageAction.Kind.RECORD),
-            MultiviewStageAction("lut", "Disable Auto LUT"),
-            MultiviewStageAction("reconnect", "Reconnect"),
-            MultiviewStageAction("experimental", "Try experimental shared Wi-Fi"),
-            MultiviewStageAction("remove", "Remove camera", MultiviewStageAction.Kind.DESTRUCTIVE),
+            MultiviewStageAction(MultiviewStageAction.LIVE_VIEW, "打开实时取景"),
+            MultiviewStageAction("record", "停止录制", MultiviewStageAction.Kind.RECORD),
+            MultiviewStageAction("lut", "关闭自动 LUT"),
+            MultiviewStageAction("reconnect", "重新连接"),
+            MultiviewStageAction("experimental", "试用共享 Wi-Fi（实验功能）"),
+            MultiviewStageAction("remove", "移除相机", MultiviewStageAction.Kind.DESTRUCTIVE),
         ),
     )
 
@@ -429,7 +429,7 @@ class MultiviewTileChromeTest {
                 }
             }
             fun hit(label: String) = android.graphics.Rect().also { awaitNode(label).getBoundsInScreen(it) }
-            val footer = listOf(hit("Camera battery 73 percent"), hit("Storage 8 GB")) +
+            val footer = listOf(hit("相机电量 73%"), hit("存储空间 8 GB")) +
                 values.map { hit(it.value) } + listOf(hit("REC 1:24"))
             val start = origin.x + layout.readouts.x * density
             val bottom = origin.y + frame.maxY * density
@@ -443,8 +443,8 @@ class MultiviewTileChromeTest {
             footer.zipWithNext().forEach { (left, right) ->
                 assertTrue(left.right <= right.left + 1, "Battery, storage, values and tally keep their order: $footer")
             }
-            awaitNode("Timecode 01:02:03")
-            awaitNode("Camera C options")
+            awaitNode("时间码 01:02:03")
+            awaitNode("机位 C 选项")
         }
     }
 
@@ -463,12 +463,12 @@ class MultiviewTileChromeTest {
                     }
                 }
             }
-            for (label in listOf("Side angle", "Osmo Pocket 4", "Timecode 01:02:03", "Camera battery 73 percent", "Storage 8 GB", "REC 1:24")) {
+            for (label in listOf("Side angle", "Osmo Pocket 4", "时间码 01:02:03", "相机电量 73%", "存储空间 8 GB", "REC 1:24")) {
                 awaitNode(label)
             }
-            val labels = listOf("Open Live View", "Stop recording", "Disable Auto LUT", "Reconnect", "Try experimental shared Wi-Fi", "Remove camera")
+            val labels = listOf("打开实时取景", "停止录制", "关闭自动 LUT", "重新连接", "试用共享 Wi-Fi（实验功能）", "移除相机")
             for (label in labels) {
-                click(awaitNode("Camera B options"))
+                click(awaitNode("机位 B 选项"))
                 click(awaitNode(label))
             }
             awaitCondition { actions.size == labels.size }
@@ -480,7 +480,7 @@ class MultiviewTileChromeTest {
     @Test fun cleanDisplayKeepsRecoveryStatusAndOptionsReachableOnCompactFeeds() {
         val layout = MultiviewPresentationLayout.compute(390f, 844f, MultiviewSafeArea(),
             MultiviewArrangement.CENTER_STAGE, selected = 0)
-        val restoring = MultiviewTileStatus("Restoring picture…", inProgress = false)
+        val restoring = MultiviewTileStatus("正在恢复图传…", inProgress = false)
         ActivityScenario.launch(BackdropRenderActivity::class.java).use { scenario ->
             scenario.onActivity { activity ->
                 activity.setContent {
@@ -492,16 +492,16 @@ class MultiviewTileChromeTest {
                     }
                 }
             }
-            awaitNode("Exit Multiview")
-            click(awaitNode("Change display mode"))
+            awaitNode("退出多机监看")
+            click(awaitNode("切换显示模式"))
             // Clean display closes open options when it applies; tap the status after it has.
             val deadline = SystemClock.uptimeMillis() + 5_000
-            while (find("Exit Multiview") != null) {
+            while (find("退出多机监看") != null) {
                 assertTrue(SystemClock.uptimeMillis() < deadline, "Clean display must hide the stage chrome")
                 SystemClock.sleep(32)
             }
-            click(awaitNode("Restoring picture… Camera B options"))
-            awaitNode("Open Live View")
+            click(awaitNode("正在恢复图传… 机位 B 选项"))
+            awaitNode("打开实时取景")
         }
     }
 
@@ -568,7 +568,7 @@ class MultiviewTileChromeTest {
             if (ready) return
             SystemClock.sleep(32)
         }
-        error("Camera settings binding did not update")
+        error("相机设置 binding did not update")
     }
 }
 

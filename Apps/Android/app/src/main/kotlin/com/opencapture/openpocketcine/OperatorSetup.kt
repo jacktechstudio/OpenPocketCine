@@ -23,7 +23,7 @@ import com.opencapture.openpocketcine.settings.PanelCloseButton
 
 object SettingsHelpCopy : OperatorHelpCopy("OpenPocketCine") {
     const val PROTOCOL =
-        "Camera control speaks DUML over Bluetooth and the camera's Wi-Fi. No DJI SDK is bundled or required."
+        "本应用通过蓝牙和相机 Wi-Fi，使用 DUML 协议控制相机，无需 DJI SDK。"
 }
 
 object OpenPocketCineLinks {
@@ -52,25 +52,32 @@ internal fun AppModel.operatorSetupState(): OperatorSetupState {
         monitorPresented = isLive)
 }
 
+private val MonitorGlesUpscaler.displayName: String get() = when (this) {
+    MonitorGlesUpscaler.OFF -> "关闭"
+    MonitorGlesUpscaler.FAST -> "快速"
+}
+
 /** Pocket's copy, links, stores and pages, as on main. */
 internal fun operatorSetupApp(model: AppModel) = OperatorSetupApp(
     wordmark = "OPENPOCKETCINE",
     help = SettingsHelpCopy,
     prefs = OperatorPrefs,
     assistHost = AppAssistHost,
-    upscalers = MonitorGlesUpscaler.supported.map { it.label },
-    upscaler = { OperatorPrefs.feedUpscaler(it).label },
-    setUpscaler = { context, label -> OperatorPrefs.setFeedUpscaler(context, MonitorGlesUpscaler.fromStored(label)) },
+    upscalers = MonitorGlesUpscaler.supported.map { it.displayName },
+    upscaler = { OperatorPrefs.feedUpscaler(it).displayName },
+    setUpscaler = { context, name ->
+        MonitorGlesUpscaler.supported.firstOrNull { it.displayName == name }?.let { OperatorPrefs.setFeedUpscaler(context, it) }
+    },
     linkSample = {
         val session = model.session
         OperatorLinkSample(session.decoder.framesEnqueued.get(), session.decoder.lastPresentedAt,
             session.videoPackets, session.hasVideoFormat)
     },
     information = OperatorAppInformation(
-        theme = "DJI Black", themeHelp = SettingsHelpCopy.THEME,
+        theme = "DJI 黑", themeHelp = SettingsHelpCopy.THEME,
         protocol = "DUML / BLE + Wi-Fi", protocolHelp = SettingsHelpCopy.PROTOCOL,
         version = formatAppVersion(BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE.toLong()),
-        versionHelp = SettingsHelpCopy.APP_VERSION, termsHelp = "How you can use OpenPocketCine.",
+        versionHelp = SettingsHelpCopy.APP_VERSION, termsHelp = "了解 OpenPocketCine 的使用条款。",
     ),
     sourceUrl = OpenPocketCineLinks.SOURCE,
     diagnostics = OperatorDiagnostics(

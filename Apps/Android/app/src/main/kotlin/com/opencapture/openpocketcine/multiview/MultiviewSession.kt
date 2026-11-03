@@ -1,5 +1,6 @@
 package com.opencapture.openpocketcine.multiview
 
+import com.opencapture.opencine.multicam.TargetOutcome
 import com.opencapture.opencine.multicam.RecordAll
 import com.opencapture.opencine.dji.applyAttitude
 import com.opencapture.opencine.dji.fromJson
@@ -81,8 +82,8 @@ private const val TAG = "Multiview"
 
 /** iOS `MultiviewLayout` raw values; persisted in the stage. */
 enum class MultiviewLayout(val raw: String) {
-    GRID("2 × 2 grid"),
-    CENTER_STAGE("Center stage");
+    GRID(MultiviewStageLayout.GRID.rawValue),
+    CENTER_STAGE(MultiviewStageLayout.CENTER_STAGE.rawValue);
 
     val arrangement: MultiviewArrangement
         get() = if (this == GRID) MultiviewArrangement.GRID else MultiviewArrangement.CENTER_STAGE
@@ -221,7 +222,7 @@ class MultiviewSession(
                 cameraState = value
                 if (replaced) control.linkDidChange()
             }
-        var status by mutableStateOf("Add camera")
+        var status by mutableStateOf("添加相机")
         var failureMessage by mutableStateOf<String?>(null)
         val recovery = MultiviewRecoveryLadder()
         var repairJob: Job? = null
@@ -239,12 +240,12 @@ class MultiviewSession(
         internal var plan by mutableStateOf(FeedEffectsRenderPlan.IDENTITY)
         /** Camera settings' preview owner; the tile's existing present tap feeds it while set. */
         internal var previewOwner by mutableStateOf<Any?>(null)
-        var lutCaption by mutableStateOf("Auto LUT")
+        var lutCaption by mutableStateOf("自动 LUT")
         var hasPicture by mutableStateOf(false)
         var publishing by mutableStateOf(false)
         var recordingBusy by mutableStateOf(false)
         var recordingAvailable by mutableStateOf(false)
-        var recordingNote by mutableStateOf<String?>(null)
+        var recordingOutcome by mutableStateOf<TargetOutcome?>(null)
         var controlHost by mutableStateOf<String?>(null)
         /** Active flag and elapsed-realtime receive time of the latest `02/80` report. */
         var recordingObservation by mutableStateOf<Pair<Boolean, Long>?>(null)
@@ -359,13 +360,13 @@ class MultiviewSession(
             recordingObservation = null
             recordingAvailable = false
             responses.clear()
-            recordingNote = null
+            recordingOutcome = null
             hasPicture = false
             publishing = false
             enableSends = 0
             lastEnable = 0L
             decoder.reset()
-            status = "Add camera"
+            status = "添加相机"
         }
     }
 
@@ -648,7 +649,7 @@ class MultiviewSession(
         networkSetupError = null
         try {
             if (!com.opencapture.opencine.appkit.validStationCredentials(ssid, password, usePhoneHotspot)) {
-                throw MultiviewFailure.Message("Check the network name and password.")
+                throw MultiviewFailure.Message("请检查网络名称和密码。")
             }
             joinSharedNetwork()
             networkStore.save(ssid, password, usePhoneHotspot)
@@ -687,7 +688,7 @@ class MultiviewSession(
                 selected,
                 beforeStationChange = {
                     if (!recordStationChange(selected)) {
-                        throw MultiviewFailure.Message("Could not save camera Wi-Fi cleanup. Try again.")
+                        throw MultiviewFailure.Message("无法保存相机 Wi-Fi 的恢复信息，请重试。")
                     }
                 },
                 onRestored = { restored ->
@@ -697,7 +698,7 @@ class MultiviewSession(
                         persistStage()
                     } else {
                         networkSetupError =
-                            "Camera Wi-Fi could not be restored. Keep it powered on and close Multiview to retry."
+                            "未能恢复相机自身的 Wi-Fi。请保持相机开机，退出多机位监看后重试。"
                     }
                 }, onFound = onFound,
             )
@@ -735,7 +736,7 @@ class MultiviewSession(
             MultiviewQualificationPolicy.budget,
         )
         if (reasons.isNotEmpty()) {
-            error = "Multiview preview is not available for this camera model yet."
+            error = "此机型暂不支持多机位预览。"
             return
         }
         if (!running || !networkConfigured || closing || busy || tile.connecting || tile.camera != null ||
@@ -748,7 +749,7 @@ class MultiviewSession(
         tile.experimentalNetwork = experimental
         tile.networkVerified = false
         tile.failureMessage = null
-        tile.status = "Connecting · approve on camera"
+        tile.status = "正在连接 · 请在相机上确认"
         persistStage()
         var stage = "host Wi-Fi"
         try {
@@ -756,11 +757,11 @@ class MultiviewSession(
             stage = "Bluetooth pairing"
             client.connect(camera)
             if (camera.model.family == "nano") {
-                tile.status = "Waking camera Wi-Fi"
+                tile.status = "正在唤醒相机 Wi-Fi"
                 val wake = client.exchange(DjiNative.CMD_SESSION_5310).payload.map { it.toInt() and 0xFF }
                 if (wake != listOf(1, 0, 0, 0)) {
                     throw MultiviewFailure.Message(
-                        "The Nano did not confirm its Wi-Fi wake. Keep it powered on and try again.")
+                        "Nano 未确认 Wi-Fi 已启动，请保持相机开机后重试。")
                 }
                 delay(1_000)
             }
@@ -779,12 +780,12 @@ class MultiviewSession(
                     policy = joinPolicy,
                 ).run(
                     identity,
-                    exchange = { kind, extra, timeoutMs -> client.exchange(kind, extra, timeoutMs).payload },
-                    send = { client.send(it) },
-                    status = { text ->
-                        tile.status = text
-                        if (text.startsWith("Waiting for camera")) stage = "camera Wi-Fi join"
+                    exchange = { kind, extra, timeoutMs ->
+                        if (kind == DjiNative.CMD_MULTICAM_JOIN) stage = "camera Wi-Fi join"
+                        client.exchange(kind, extra, timeoutMs).payload
                     },
+                    send = { client.send(it) },
+                    status = { tile.status = it },
                     hotspotReady = { path.address(true) != null },
                     verifyOnNetwork = {
                         try {
@@ -816,8 +817,8 @@ class MultiviewSession(
             if (!running) return
             tile.driver?.close()
             tile.driver = null
-            tile.status = "Could not connect"
-            tile.failureMessage = error.message ?: "Could not connect"
+            tile.status = "连接失败"
+            tile.failureMessage = error.message ?: "连接失败"
             log("multiview: add failed stage=$stage error=${error.javaClass.simpleName}")
             // Keep the tile available for discovery retry after a successful join.
         } finally {
@@ -890,8 +891,8 @@ class MultiviewSession(
             tile.driver = null
             tile.publishing = false
             tile.controlHost = null
-            tile.status = "Could not connect preview"
-            tile.failureMessage = "Could not restore preview. Tap Reconnect to try again."
+            tile.status = "无法连接图传"
+            tile.failureMessage = "未能恢复预览，请点按“重新连接”后重试。"
             tile.recovery.fail()
         } finally {
             tile.connecting = false
@@ -919,7 +920,7 @@ class MultiviewSession(
             }
             for (attempt in 1..2) {
                 if (!running) throw CancellationException("multiview closed")
-                tile.status = "Finding camera on Wi-Fi · $attempt of 2"
+                tile.status = "正在 Wi-Fi 网络中查找相机（$attempt/2）"
                 val candidates = search.candidates(excluded)
                 for (address in candidates) {
                     if (!running) throw CancellationException("multiview closed")
@@ -938,7 +939,7 @@ class MultiviewSession(
                 if (attempt == 1) delay(3_000)
             }
             throw MultiviewFailure.Message(
-                "Could not find this camera on the shared Wi-Fi. Check that both devices use the same network and that client isolation is off, then tap Reconnect.")
+                "在共享 Wi-Fi 中找不到相机。请确认手机与相机已连接同一网络，且路由器的客户端隔离已关闭，然后点按“重新连接”。")
         } finally {
             search.cancel()
             searches.remove(tile.id)
@@ -954,7 +955,7 @@ class MultiviewSession(
             if (!running || !SharedWiFi.validAddress(address) ||
                 tiles.any { it.id != tile.id && it.controlHost == address }
             ) {
-                throw MultiviewFailure.Message("Camera discovery returned an unavailable address. Tap Reconnect to search again.")
+                throw MultiviewFailure.Message("搜索到的相机地址不可用，请点按“重新连接”再次搜索。")
             }
             tile.driver?.close()
             tile.driver = null
@@ -967,7 +968,7 @@ class MultiviewSession(
             tile.enableSends = 0
             tile.lastEnable = 0L
             if (tile.hasPicture) tile.decoder.beginIDRHold() else tile.decoder.reset()
-            tile.status = "Connecting normal preview"
+            tile.status = "正在连接实时预览"
             val driver = DatalinkDriver(
                 path, camera.model.datalinkPort, camera.model.tcpPoke, camera.model.pairingToken,
                 cameraModel = camera.model, host = address,
@@ -1003,7 +1004,7 @@ class MultiviewSession(
                 delay(50)
             }
             if (reply?.payload?.contentEquals(identity) != true) {
-                throw MultiviewFailure.Message("This network connection did not identify the selected camera.")
+                throw MultiviewFailure.Message("未能在当前网络中识别所选相机。")
             }
             if (!running) throw CancellationException("multiview closed")
             tile.networkVerified = true
@@ -1011,7 +1012,7 @@ class MultiviewSession(
                 driver.close()
                 tile.driver = null
                 tile.failureMessage = null
-                tile.status = "Wi-Fi join verified · Preview not supported yet"
+                tile.status = "Wi-Fi 已连接 · 此机型暂不支持预览"
                 log("multiview: experimental LAN identity verified; preview unavailable")
                 return
             }
@@ -1053,7 +1054,7 @@ class MultiviewSession(
             tile.enableSends = 1
             tile.publishing = true
             tile.previewStarted = SystemClock.elapsedRealtime()
-            if (!tile.hasPicture) tile.status = "Waiting for video"
+            if (!tile.hasPicture) tile.status = "正在等待图传"
         } finally {
             if (addressReservations[address] == tile.id) addressReservations.remove(address)
         }
@@ -1138,12 +1139,12 @@ class MultiviewSession(
         if (action == "none") {
             if (!pathReady && now - (tile.pathLostAt ?: now) > 45_000) {
                 tile.recovery.fail()
-                tile.failureMessage = "Shared network unavailable. Rejoin it, then reconnect this camera."
+                tile.failureMessage = "共享网络不可用。请重新加入网络，然后重新连接此相机。"
             }
             return
         }
         log("multiview: repair action=$action snapshot=$json")
-        tile.status = "Reconnecting…"
+        tile.status = "正在重新连接…"
         val camera = tile.camera ?: return
         if (action == "resendLiveViewEnable") {
             if (!tile.decoder.isPresentationReady) return
@@ -1186,7 +1187,7 @@ class MultiviewSession(
         while (busy && running) delay(200)
         if (!running || tile.camera == null) return
         if (!tile.recovery.beginRejoin()) {
-            tile.failureMessage = "Could not restore preview. Tap Reconnect to try again."
+            tile.failureMessage = "未能恢复预览，请点按“重新连接”后重试。"
             return
         }
         connectPreview(tile)
@@ -1208,7 +1209,7 @@ class MultiviewSession(
         }
         try {
             for (tile in recordingTiles) {
-                if (plan.targets.any { tile.entryId in it.entries }) tile.recordingNote = RecordAll.WAITING
+                if (plan.targets.any { tile.entryId in it.entries }) tile.recordingOutcome = null
             }
             val result = multicam().submit(plan)
             if (result == null) {
@@ -1219,7 +1220,7 @@ class MultiviewSession(
             val group = multicam().group
             for (tile in tiles) {
                 val outcome = result.outcome(tile.entryId, group) ?: continue
-                RecordAll.note(outcome, plan.direction)?.let { tile.recordingNote = it }
+                if (outcome != TargetOutcome.Superseded) tile.recordingOutcome = outcome
             }
             if (together) {
                 val allMatch = recordingTiles.all { it.recordingAvailable && it.recordingObservation?.first == start }
@@ -1311,7 +1312,7 @@ class MultiviewSession(
         persistStage()
         closing = false
         if (pendingReset.isNotEmpty()) {
-            error = "Some cameras could not return to their own Wi-Fi. Keep them powered on and close Multiview again to retry."
+            error = "部分相机未能恢复自身的 Wi-Fi。请保持相机开机，再次退出多机位监看以重试。"
             return false
         }
         return true
@@ -1377,7 +1378,7 @@ class MultiviewSession(
     }
 
     companion object {
-        const val LIVE_STATUS = "Live · Video mode"
+        const val LIVE_STATUS = "实时取景 · 录像模式"
         private const val IDENTITY_KEY = (0x07 shl 8) or 0x07
         private const val RECORD_KEY = (0x02 shl 8) or 0x02
         private const val STATION_OPEN_MS = 15_000L

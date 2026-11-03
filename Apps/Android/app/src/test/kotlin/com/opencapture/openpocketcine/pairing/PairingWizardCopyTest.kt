@@ -24,31 +24,31 @@ class PairingWizardCopyTest {
         val wizard = wizard()
         assertEquals(
             listOf(
-                "Turn the camera on and keep the phone nearby. Pocket and Nano both appear. Choose the one you want.",
-                "If the camera shows Approve, tap it on that camera's screen. First-time pairing can wait up to 90 seconds.",
-                "We read the camera's network over Bluetooth, then join its Wi-Fi for you.",
-                "Exposure, LUTs and scopes go live as soon as the video link is up.",
+                "打开相机，将手机靠近相机。从列表中选择要连接的 Pocket 或 Nano。",
+                "如果相机提示配对，请在相机屏幕上确认。首次配对最长可能需要 90 秒。",
+                "手机将通过蓝牙读取相机的网络信息，然后连接相机的 Wi-Fi。",
+                "图传连接后，即可调整曝光、加载 LUT 并查看示波器。",
             ),
             wizard.bodies,
         )
-        assertEquals(listOf("Look for an Approve / pairing prompt", "Tap it on the camera screen"), wizard.approveLines)
-        assertEquals(listOf("Leave the camera on. It brings up its own Wi-Fi", "On 5.8 GHz that can take about a minute; we keep trying"), wizard.joinLines)
+        assertEquals(listOf("留意相机上的配对提示", "在相机屏幕上确认配对"), wizard.approveLines)
+        assertEquals(listOf("保持相机开机，等待相机启动 Wi-Fi", "5.8 GHz 网络启动可能需要约 1 分钟，手机会自动重试"), wizard.joinLines)
         assertEquals(null, wizard.blocker)
     }
 
     @Test
     fun discoveryBlockersTakeThePrimaryAction() {
-        assertEquals("Open Settings", wizard(granted = false, needsSettings = true).blocker)
-        assertTrue(wizard(granted = false).blocker!!.startsWith("Allow "))
-        assertEquals("Turn Bluetooth on", wizard(radioOn = false).blocker)
+        assertEquals("打开设置", wizard(granted = false, needsSettings = true).blocker)
+        assertTrue(wizard(granted = false).blocker!!.startsWith("授予"))
+        assertEquals("开启蓝牙", wizard(radioOn = false).blocker)
     }
 
     @Test
     fun theLiveLabelIsThePhase() {
-        assertEquals("Scanning for camera…", PairingWizard.phaseLabel(ConnectionPhase.SCANNING))
-        assertEquals("Approve on the camera screen", PairingWizard.phaseLabel(ConnectionPhase.AWAITING_APPROVAL))
-        assertEquals("Reading Wi-Fi credentials…", PairingWizard.phaseLabel(ConnectionPhase.READING_WIFI_CREDS))
-        assertEquals("Opening datalink…", PairingWizard.phaseLabel(ConnectionPhase.OPENING_DATALINK))
+        assertEquals("正在搜索相机…", PairingWizard.phaseLabel(ConnectionPhase.SCANNING))
+        assertEquals("请在相机屏幕上确认", PairingWizard.phaseLabel(ConnectionPhase.AWAITING_APPROVAL))
+        assertEquals("正在读取 Wi-Fi 连接信息…", PairingWizard.phaseLabel(ConnectionPhase.READING_WIFI_CREDS))
+        assertEquals("正在建立数据连接…", PairingWizard.phaseLabel(ConnectionPhase.OPENING_DATALINK))
     }
 
     @Test
@@ -56,12 +56,12 @@ class PairingWizardCopyTest {
         val camera = NearbyCamera("n1", name = "OsmoPocket3-4D5E", model = "Osmo Pocket 3", routes = setOf(RouteKind.CAMERA_ACCESS_POINT))
         val found = FoundCamera("n1", "BB", "OsmoPocket3-4D5E", CameraModel.fromJson("""{"name":"Osmo Pocket 3","family":"pocket","verified":true}"""), 0x20)
         assertEquals(
-            NearbyCardCopy("OsmoPocket3-4D5E", "Pocket · Osmo Pocket 3 · nearby", "Needs approval on the camera"),
+            NearbyCardCopy("OsmoPocket3-4D5E", "Pocket · Osmo Pocket 3 · nearby", "请在相机上确认配对"),
             AppModel.nearbyCard(camera, found),
         )
         val nano = FoundCamera("n2", "CC", "DJI Camera", CameraModel(name = "Osmo Nano", family = "nano"), null)
         assertEquals(
-            NearbyCardCopy("Osmo Nano", "Nano · nearby · unverified", "Needs approval on the camera"),
+            NearbyCardCopy("Osmo Nano", "Nano · nearby · 未验证", "请在相机上确认配对"),
             AppModel.nearbyCard(NearbyCamera("n2", name = "Osmo Nano", model = "Osmo Nano", routes = setOf(RouteKind.CAMERA_ACCESS_POINT)), nano),
         )
     }

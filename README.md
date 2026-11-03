@@ -1,10 +1,18 @@
+# OpenPocketCine 安卓简体中文版
+
+此分支面向使用 DJI Osmo Pocket 拍摄的中文用户。监看和相机设置沿用摄影与影视制作术语，型号、色彩标准和计量单位保留通用写法。APK 适用于 Android 10 及以上的 arm64-v8a 设备，可与原版并存。
+
+从源码构建时，先运行 `scripts/checkout-opencine.sh` 获取固定版本的中文共享组件。按 ANDROID.md 配好工具链后，在 `Apps/Android` 中运行 `./gradlew :app:assembleDebug`。
+
+以下为上游项目说明。
+
 <div align="center">
 
 <a href="https://opencapture.org/openpocketcine/">
   <img src="docs/assets/icon.png" alt="OpenPocketCine app icon" width="96" height="96">
 </a>
 
-# OpenPocketCine
+**OpenPocketCine**
 
 **The open field monitor for DJI Osmo.**<br>
 Pro scopes, exposure assists, camera and gimbal control, playback and LUT export on your phone.
