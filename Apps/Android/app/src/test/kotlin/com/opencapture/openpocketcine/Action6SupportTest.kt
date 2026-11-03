@@ -61,7 +61,7 @@ class Action6SupportTest {
         assertEquals(0x3D, CameraCommands.wireColorMode(CameraCommands.COLOR_DLOG_M, action6, "other"))
         assertEquals(CameraCommands.COLOR_NORMAL10, CameraCommands.parseColorMode(0x3F, action6, "other"))
         assertEquals(CameraCommands.COLOR_DLOG_M, CameraCommands.parseColorMode(0x3D, action6, "other"))
-        assertEquals(listOf("Normal 10-bit", "D-Log M"), CaptureLists.colorWheelLabels(CameraStatus(), "other", action6,
+        assertEquals(listOf("普通 10-bit", "D-Log M"), CaptureLists.colorWheelLabels(CameraStatus(), "other", action6,
             CameraModel.fromJson("""{"name":"$action6","family":"other"}""").captureProfile!!.labels))
     }
 
@@ -115,7 +115,7 @@ class Action6SupportTest {
         assertEquals(ApertureStrategy.AUTO, status.apertureStrategy)
         assertEquals(listOf(4, 2, 3), status.availableApertureStrategies)
         assertEquals("f/2.9", ApertureStrategy.tileValue(status))
-        assertEquals("Auto", ApertureStrategy.tileValue(status.copy(irisHundredths = -1)))
+        assertEquals("自动", ApertureStrategy.tileValue(status.copy(irisHundredths = -1)))
         assertEquals("—", ApertureStrategy.tileValue(CameraStatus()))
         // The JNI status JSON drops these fields; the session carries them over.
         assertEquals(status.availableApertureStrategies, CameraStatus().carryingAperture(status).availableApertureStrategies)
@@ -127,9 +127,9 @@ class Action6SupportTest {
         assertEquals(listOf(1, 2, 3), ApertureStrategy.choices(CameraStatus(expoMode = CameraCommands.EXPO_MANUAL)))
         assertEquals(listOf(4, 2, 3), ApertureStrategy.choices(CameraStatus(expoMode = CameraCommands.EXPO_AUTO)))
         assertEquals(listOf(1), ApertureStrategy.choices(superNight.copy(availableApertureStrategies = listOf(1))))
-        assertEquals(listOf("Auto", "f/2.8", "Starburst f/4"), CaptureLists.apertureLabels(CameraStatus()))
-        assertEquals(ApertureStrategy.STARBURST, CaptureLists.apertureFromLabel("Starburst f/4"))
-        assertEquals("APERTURE", LiveSheet.APERTURE.headerLabel)
-        assertEquals("Aperture strategy", LiveSheet.APERTURE.subtitle)
+        assertEquals(listOf("自动", "f/2.8", "星芒 F4"), CaptureLists.apertureLabels(CameraStatus()))
+        assertEquals(ApertureStrategy.STARBURST, CaptureLists.apertureFromLabel("星芒 F4"))
+        assertEquals("光圈", LiveSheet.APERTURE.headerLabel)
+        assertEquals("光圈控制方式", LiveSheet.APERTURE.subtitle)
     }
 }

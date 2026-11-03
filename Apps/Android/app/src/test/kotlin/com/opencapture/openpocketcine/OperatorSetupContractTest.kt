@@ -85,12 +85,12 @@ class OperatorSetupContractTest {
         assertEquals(2, OperatorLinkHealth.bars(isLive = true, videoPackets = 40, hasVideoFormat = false))
         assertEquals(3, OperatorLinkHealth.bars(isLive = true, videoPackets = 120, hasVideoFormat = false))
         assertEquals(4, OperatorLinkHealth.bars(isLive = true, videoPackets = 10, hasVideoFormat = true))
-        assertEquals("No live path.", OperatorLinkHealth.caption(isLive = false, bars = 0))
-        assertEquals("Waiting for the link.", OperatorLinkHealth.caption(isLive = true, bars = 0))
-        assertEquals("Link is weak. · Poor", OperatorLinkHealth.caption(isLive = true, bars = 1))
-        assertEquals("Some loss on the link. · Watch", OperatorLinkHealth.caption(isLive = true, bars = 2))
-        assertEquals("Some loss on the link. · Watch", OperatorLinkHealth.caption(isLive = true, bars = 3))
-        assertEquals("Link is clean. · Stable", OperatorLinkHealth.caption(isLive = true, bars = 4))
+        assertEquals("未建立图传连接。", OperatorLinkHealth.caption(isLive = false, bars = 0))
+        assertEquals("正在等待图传连接。", OperatorLinkHealth.caption(isLive = true, bars = 0))
+        assertEquals("图传不稳定 · 较差", OperatorLinkHealth.caption(isLive = true, bars = 1))
+        assertEquals("图传有丢包 · 注意", OperatorLinkHealth.caption(isLive = true, bars = 2))
+        assertEquals("图传有丢包 · 注意", OperatorLinkHealth.caption(isLive = true, bars = 3))
+        assertEquals("图传正常 · 稳定", OperatorLinkHealth.caption(isLive = true, bars = 4))
     }
 
     @Test
@@ -126,25 +126,25 @@ class OperatorSetupContractTest {
 
     @Test
     fun legalBodiesAreAndroidKeyedAndIncludeNotice() {
-        assertEquals(listOf("Privacy", "Terms", "Licenses", "NOTICE"), MonitorLegalPage.entries.map { it.title })
+        assertEquals(listOf("隐私", "条款", "许可证", "NOTICE"), MonitorLegalPage.entries.map { it.title })
         val privacy = (PocketLegalDocuments.privacy as MonitorLegalDocument.Text).body
         assertEquals(OpenPocketCineLinks.TERMS, (PocketLegalDocuments.terms as MonitorLegalDocument.Link).url)
         assertTrue(privacy.contains("Android Keystore"))
         assertFalse(privacy.contains("iOS Keychain"))
-        assertTrue(privacy.contains("Android may ask for location"))
-        assertTrue(privacy.contains("OpenCapture is the data controller"))
+        assertTrue(privacy.contains("Android 可能会请求位置信息权限"))
+        assertTrue(privacy.contains("OpenCapture 是数据控制者"))
         // In-app privacy matches the website (2026-10-16): the shared reliability paragraph with the
         // install identifier, no Frame.io on Android, and Android's share wording.
         assertTrue(privacy.contains(MonitorSettingsCopy.reliabilityReportsPrivacy))
         assertFalse(privacy.contains("Frame.io"))
-        assertTrue(privacy.contains("Android or the app you pick"))
+        assertTrue(privacy.contains("Android 或您选择的应用"))
         assertFalse(privacy.contains("Apple"))
         assertTrue(privacy.contains("support@openpocketcine.app"))
-        assertTrue(privacy.contains("optional and off by default"))
-        assertTrue(privacy.contains("sends your description and any optional reply email"))
-        assertTrue(privacy.contains("up to three photos or screenshots"))
-        assertTrue(privacy.contains("no images are attached automatically"))
-        assertTrue(privacy.contains("Automatic reports exclude all images"))
+        assertTrue(privacy.contains("可选功能，默认关闭"))
+        assertTrue(privacy.contains("问题描述和选填的回复邮箱"))
+        assertTrue(privacy.contains("最多可以添加三张照片或屏幕截图"))
+        assertTrue(privacy.contains("不会自动附加图片"))
+        assertTrue(privacy.contains("自动报告不含图像"))
         assertFalse(privacy.contains("prepares an email to support@openpocketcine.app"))
         assertFalse(privacy.contains("does not send analytics, crash reports"))
         val root = java.io.File(System.getProperty("openpocketcine.repositoryRoot"))
@@ -161,16 +161,16 @@ class OperatorSetupContractTest {
 
     @Test
     fun cacheSizeLabelAndLutLook() {
-        assertEquals("Empty", formatCacheSize(0))
+        assertEquals("空", formatCacheSize(0))
         assertEquals("512 B", formatCacheSize(512))
-        assertEquals("Auto · Off", lutLookLabel("auto"))
+        assertEquals("自动 · 关", lutLookLabel("auto"))
         assertEquals(
-            "Auto · D-Log2 → Rec.709",
+            "自动 · D-Log2 → Rec.709",
             lutLookLabel("auto", colorMode = CameraCommands.COLOR_DLOG2, profile = com.opencapture.opencine.dji.DjiCameraLUTProfile.make("pocket", null)),
         )
-        assertEquals("Off · Auto", lutLookLabel("auto", enabled = false, colorMode = CameraCommands.COLOR_DLOG2))
+        assertEquals("关 · 自动", lutLookLabel("auto", enabled = false, colorMode = CameraCommands.COLOR_DLOG2))
         assertEquals("D-Log2 → Rec.709", lutLookLabel("officialDLog2"))
-        assertEquals("Off", lutLookLabel("off"))
+        assertEquals("关", lutLookLabel("off"))
         assertEquals("Look", lutLookLabel("custom:Look.cube"))
         assertTrue(lutPickerAvailable())
         assertEquals("1.0 (12)", formatAppVersion("1.0", 12))
@@ -183,11 +183,11 @@ class OperatorSetupContractTest {
 
     @Test
     fun connectionPhaseLabelsMatchCore() {
-        assertEquals("Idle", connectionPhaseLabel(ConnectionPhase.IDLE, null))
-        assertEquals("Connected", connectionPhaseLabel(ConnectionPhase.LIVE, null))
-        assertEquals("Failed", connectionPhaseLabel(ConnectionPhase.FAILED, null))
-        assertEquals("Failed: timed out", connectionPhaseLabel(ConnectionPhase.FAILED, "timed out"))
-        assertEquals("Approve on the camera screen", connectionPhaseLabel(ConnectionPhase.AWAITING_APPROVAL, null))
+        assertEquals("空闲", connectionPhaseLabel(ConnectionPhase.IDLE, null))
+        assertEquals("已连接", connectionPhaseLabel(ConnectionPhase.LIVE, null))
+        assertEquals("失败", connectionPhaseLabel(ConnectionPhase.FAILED, null))
+        assertEquals("失败：timed out", connectionPhaseLabel(ConnectionPhase.FAILED, "timed out"))
+        assertEquals("请在相机屏幕上确认", connectionPhaseLabel(ConnectionPhase.AWAITING_APPROVAL, null))
     }
 
     @Test
@@ -209,11 +209,11 @@ class OperatorSetupContractTest {
         assertEquals("25", OperatorLinkHealth.fpsChipLabel(true, false, 25.0, ConnectionPhase.LIVE))
         assertEquals(
             "Pocket · BLE + Wi-Fi · 25 FPS",
-            OperatorLinkHealth.liveTileDetail(true, "Pocket", "25", "Connected"),
+            OperatorLinkHealth.liveTileDetail(true, "Pocket", "25", "已连接"),
         )
-        assertEquals("Idle", OperatorLinkHealth.liveTileDetail(false, "Pocket", "—", "Idle"))
+        assertEquals("空闲", OperatorLinkHealth.liveTileDetail(false, "Pocket", "—", "空闲"))
         assertEquals(4, OperatorLinkHealth.bars(true, 0, false, measuredFps = 25.0))
         assertEquals(2, OperatorLinkHealth.bars(true, 0, false, measuredFps = 12.5))
-        assertEquals("No live path.", OperatorLinkHealth.caption(false, 0))
+        assertEquals("未建立图传连接。", OperatorLinkHealth.caption(false, 0))
     }
 }

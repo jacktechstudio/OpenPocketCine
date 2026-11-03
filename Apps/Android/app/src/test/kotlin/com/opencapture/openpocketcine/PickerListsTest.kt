@@ -24,37 +24,37 @@ class PickerListsTest {
     private fun list(text: String) = text.split("|")
 
     @Test fun gimbalPickers() {
-        assertEquals(list("Follow|Tilt locked|FPV|Direction Lock"), GimbalMode.pickerOrder.map { it.label })
-        assertEquals(list("Slow|Default|Fast"), GimbalSpeed.pickerOrder.map { it.label })
-        assertEquals(list("Off|Soft|Medium"), GimbalRamp.pickerOrder.map { it.label })
-        assertEquals(list("Recenter|Level"), GimbalDoubleTap.pickerOrder.map { it.label })
+        assertEquals(list("跟随|俯仰锁定|FPV|方向锁定"), GimbalMode.pickerOrder.map { it.label })
+        assertEquals(list("慢速|默认|快速"), GimbalSpeed.pickerOrder.map { it.label })
+        assertEquals(list("关|柔和|中等"), GimbalRamp.pickerOrder.map { it.label })
+        assertEquals(list("云台回中|水平校正"), GimbalDoubleTap.pickerOrder.map { it.label })
     }
 
     @Test fun focusPicker() {
-        assertEquals(list("AF-S|AF-C|Showcase|Lock|Priority"), FocusOption.entries.map { it.chip })
+        assertEquals(list("AF-S|AF-C|展示模式|主角追焦|登记优先"), FocusOption.entries.map { it.chip })
     }
 
     @Test fun shootingModePickers() {
-        val standard = list("Video|Photo|TimeLapse|HyperLapse|SuperNight|SlowMo")
+        val standard = list("视频|拍照|静止延时|运动延时|超级夜景|慢动作")
         for (name in listOf("Osmo Pocket 4 Pro", "Osmo Pocket 4", "Osmo Nano", "Osmo Action 6", null)) {
             assertEquals(standard, CaptureLists.shootingModeLabels(name), "$name")
         }
-        assertEquals(list("Video|Photo|TimeLapse|HyperLapse|Low-Light|SlowMo"), CaptureLists.shootingModeLabels("Osmo Pocket 3",
+        assertEquals(list("视频|拍照|静止延时|运动延时|低光视频|慢动作"), CaptureLists.shootingModeLabels("Osmo Pocket 3",
             profile = CameraModel.fromJson("""{"name":"Osmo Pocket 3"}""").captureProfile!!.labels))
         assertEquals(
-            list("Video|Photo|Live Photo|TimeLapse|HyperLapse|SuperNight|SlowMo"),
+            list("视频|拍照|动态照片|静止延时|运动延时|超级夜景|慢动作"),
             CaptureLists.shootingModeLabels("Osmo Pocket 4 Pro", CameraCommands.SHOOT_LIVE_PHOTO),
         )
     }
 
     @Test fun colorPickers() {
         val wheels = listOf(
-            Triple("Osmo Pocket 4 Pro", "pocket", "Normal|HDR|D-Log|D-Log2"),
-            Triple("Osmo Pocket 4", "pocket", "Normal|HDR|D-Log"),
-            Triple("Osmo Pocket 3", "pocket", "Normal|HDR|D-Log M"),
-            Triple("Osmo Nano", "nano", "Normal 8-bit|Normal 10-bit|D-Log M 10-bit"),
-            Triple("Osmo Action 6", "other", "Normal 10-bit|D-Log M"),
-            Triple("", "pocket", "Normal|HDR|D-Log"),
+            Triple("Osmo Pocket 4 Pro", "pocket", "普通|HDR|D-Log|D-Log2"),
+            Triple("Osmo Pocket 4", "pocket", "普通|HDR|D-Log"),
+            Triple("Osmo Pocket 3", "pocket", "普通|HDR|D-Log M"),
+            Triple("Osmo Nano", "nano", "普通 8-bit|普通 10-bit|D-Log M 10-bit"),
+            Triple("Osmo Action 6", "other", "普通 10-bit|D-Log M"),
+            Triple("", "pocket", "普通|HDR|D-Log"),
         )
         for ((name, family, labels) in wheels) {
             assertEquals(list(labels), CaptureLists.colorWheelLabels(CameraStatus(), family, name,
@@ -77,13 +77,13 @@ class PickerListsTest {
     }
 
     @Test fun exposureAndControlPickers() {
-        assertEquals(list("Auto|Manual"), CaptureLists.expoLabels)
+        assertEquals(list("自动|手动"), CaptureLists.expoLabels)
         assertEquals(
             list("−3.0|−2.7|−2.3|−2.0|−1.7|−1.3|−1.0|−0.7|−0.3|0.0|+0.3|+0.7|+1.0|+1.3|+1.7|+2.0|+2.3|+2.7|+3.0"),
             CaptureLists.evLabels,
         )
         assertEquals(list("Max200|Max400|Max800|Max1600|Max3200|Max6400|Max12800|Max25600"), IsoLimit.entries.map { it.name })
-        assertEquals(list("Linear|Standard|Fine"), CameraCommands.VirtualJoystickCurve.entries.map { it.label })
-        assertEquals(list("Left|Right"), GamepadGimbalStick.entries.map { it.label })
+        assertEquals(list("线性|标准|精细"), CameraCommands.VirtualJoystickCurve.entries.map { it.label })
+        assertEquals(list("左摇杆|右摇杆"), GamepadGimbalStick.entries.map { it.label })
     }
 }

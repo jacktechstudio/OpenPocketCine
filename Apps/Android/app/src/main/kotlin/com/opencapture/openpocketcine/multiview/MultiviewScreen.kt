@@ -175,7 +175,7 @@ fun MultiviewScreen(model: AppModel, session: MultiviewSession, onClose: () -> U
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
             ) {
                 CircularProgressIndicator(Modifier.size(20.dp), color = LiveDesign.text, strokeWidth = 2.dp)
-                Text("Returning cameras to their Wi-Fi…", color = LiveDesign.text, style = LiveType.text(15f))
+                Text("正在恢复各相机自身的 Wi-Fi…", color = LiveDesign.text, style = LiveType.text(15f))
             }
         }
         if (showNetwork) {
@@ -198,7 +198,7 @@ fun MultiviewScreen(model: AppModel, session: MultiviewSession, onClose: () -> U
                         MultiviewPickerRow(
                             camera.id, camera.name,
                             detail = if (camera.hasMultiviewPreview) null
-                            else "Try experimental shared Wi-Fi · Preview unavailable",
+                            else "试用共享 Wi-Fi（实验功能）· 暂不支持预览",
                             limited = !camera.hasMultiviewPreview,
                         )
                     },
@@ -209,7 +209,7 @@ fun MultiviewScreen(model: AppModel, session: MultiviewSession, onClose: () -> U
                             session.enqueueAdd(camera, tile, experimental = !camera.hasMultiviewPreview)
                         }
                     },
-                    footer = "Each camera will join ${session.ssid}. Approve on the camera if asked.",
+                    footer = "各相机将连接到 ${session.ssid}。如有提示，请在相机屏幕上确认。",
                     feedback = { haptics.selection() },
                 )
             }
@@ -225,11 +225,11 @@ fun MultiviewScreen(model: AppModel, session: MultiviewSession, onClose: () -> U
     session.error?.let { message ->
         AlertDialog(
             onDismissRequest = { session.error = null },
-            title = { Text("Multiview") },
+            title = { Text("多机位监看") },
             text = { Text(message) },
-            confirmButton = { TextButton(onClick = { session.error = null }) { Text("OK") } },
+            confirmButton = { TextButton(onClick = { session.error = null }) { Text("确定") } },
             dismissButton = if (session.hasPendingCleanup) {
-                { TextButton(onClick = { session.error = null; close.value() }) { Text("Close anyway") } }
+                { TextButton(onClick = { session.error = null; close.value() }) { Text("仍然关闭") } }
             } else null,
         )
     }
@@ -243,7 +243,7 @@ fun MultiviewScreen(model: AppModel, session: MultiviewSession, onClose: () -> U
                     closeStage()
                 }) { Text(MultiviewNetworkRestore.CLOSE_ACTION) }
             },
-            dismissButton = { TextButton(onClick = { showLeave = false }) { Text("Cancel") } },
+            dismissButton = { TextButton(onClick = { showLeave = false }) { Text("取消") } },
         )
     }
 }
@@ -319,7 +319,7 @@ internal fun MultiviewStageContent(
         lut = assigned.any { it.lutEnabled },
         busy = session.busy, closing = session.closing, interactive = interactive,
         network = MultiviewStageButton(
-            "Shared Wi-Fi", MonitorIcon.WIFI, enabled = !session.busy && !session.connectingCameras,
+            "共享 Wi-Fi", MonitorIcon.WIFI, enabled = !session.busy && !session.connectingCameras,
             identifier = "multiview.network", action = onNetwork,
         ),
     ) { slot -> picture(session.tiles[slot]) }
@@ -457,7 +457,7 @@ private fun MultiviewNetworkSetup(
             session.selectNetworkSource(network.hotspot)
             session.selectNetwork(network.ssid)
             session.password = network.password
-            if (session.configureNetwork()) null else session.networkSetupError ?: "Could not connect. Try again."
+            if (session.configureNetwork()) null else session.networkSetupError ?: "连接失败，请重试。"
         }, cancel = cancel, complete = complete,
         lockedNetwork = if (session.tiles.any { it.camera != null }) {
             StationNetwork(session.ssid, "", session.usePhoneHotspot)

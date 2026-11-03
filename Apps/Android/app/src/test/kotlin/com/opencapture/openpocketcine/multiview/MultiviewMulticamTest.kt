@@ -122,7 +122,7 @@ class MultiviewMulticamTest {
         assertTrue(strict.isRefused)
         val exclusion = Exclusion(tiles[2].id, ExclusionReason.Rejected(CommandRejection.RecordingStateUnknown))
         assertEquals(listOf(exclusion), strict.exclusions)
-        assertEquals("Waiting for a camera's record state.", MultiviewRecordContext(strict).refusal)
+        assertEquals("正在等待相机报告录制状态。", MultiviewRecordContext(strict).refusal)
 
         val subset = view(tiles).let { RecordPlan.make(RecordDirection.START, TargetPolicy.ELIGIBLE_SUBSET, tiles.map { it.id }, it.group, it.state) }
         assertTrue(subset.isExecutable)
@@ -152,13 +152,13 @@ class MultiviewMulticamTest {
         assertEquals(TargetOutcome.Confirmed, result.outcome(b.id, view(tiles).group))
         assertEquals(TargetOutcome.TimedOut, result.outcome(c.id, view(tiles).group))
         assertEquals(TargetOutcome.Rejected(CommandRejection.CameraRefused), result.outcome(d.id, view(tiles).group))
-        assertEquals("Recording", RecordAll.note(TargetOutcome.Confirmed, RecordDirection.START))
-        assertEquals("No confirmation · check camera", RecordAll.note(TargetOutcome.TimedOut, RecordDirection.START))
+        assertEquals("录制中", RecordAll.note(TargetOutcome.Confirmed, RecordDirection.START))
+        assertEquals("相机未确认 · 请检查相机", RecordAll.note(TargetOutcome.TimedOut, RecordDirection.START))
         assertEquals(
-            "Recording command rejected · check camera",
+            "相机拒绝录制指令 · 请检查相机",
             RecordAll.note(TargetOutcome.Rejected(CommandRejection.CameraRefused), RecordDirection.START),
         )
-        assertEquals("2 of 4 confirmed · check camera tiles", RecordAll.summary(result, allMatch = false))
+        assertEquals("2/4 个机位已确认 · 请检查各机位画面", RecordAll.summary(result, allMatch = false))
         advanceTimeBy(5_000)
         // Only the four starts went out: no stop for a or b because c and d failed.
         assertEquals(listOf(listOf(true), listOf(true), listOf(true), listOf(true)), tiles.map { it.sent })

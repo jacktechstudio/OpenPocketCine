@@ -12,10 +12,10 @@ class AppLutPickerCopyTest {
             LutPickerCopy(
                 cameraTab = "DJI",
                 autoId = LutCatalog.OFFICIAL_AUTO,
-                customHint = "Imported looks land here. Auto stays on Built-in or DJI.",
-                noLookCaption = "No matching look for this color / camera",
-                officialCubeCaption = "Official DJI Rec.709 cube",
-                cameraLooksCaption = "Official DJI looks for this color / camera",
+                customHint = "导入的 LUT 会显示在这里。自动模式仅选用内置或 DJI LUT。",
+                noLookCaption = "没有适用于当前色彩模式和机型的 LUT",
+                officialCubeCaption = "DJI 官方 Rec.709 LUT",
+                cameraLooksCaption = "适用于当前色彩模式和机型的 DJI 官方 LUT",
             ),
             AppLutPickerCopy,
         )

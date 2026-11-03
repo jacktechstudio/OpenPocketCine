@@ -107,7 +107,7 @@ class LutDocumentAdoptionNativeTest {
                         }
                     }
                 }
-                tap("Custom")
+                tap("自定义")
                 val red = cube("1 0 0")
                 val blue = cube("0 0 1")
                 val redDocument = document("valid-red", red)
@@ -146,8 +146,8 @@ class LutDocumentAdoptionNativeTest {
                     val generation = library.renderGeneration.value
                     scenario.onActivity { if (model.assist.lutOn) model.assist.toggle(MonitorAssistTool.LUT) }
                     deliver(documents, document(kind, bytes))
-                    val error = if (kind == "oversized") "The selected document could not be read."
-                        else "That document is not a supported .cube LUT."
+                    val error = if (kind == "oversized") "无法读取所选文档。"
+                        else "此文档不是受支持的 .cube LUT。"
                     native(error)
                     assertContentEquals(blue, saved.readBytes(), "$kind must preserve the valid original")
                     assertEquals(generation, library.renderGeneration.value, "$kind must not publish a commit")
@@ -161,7 +161,7 @@ class LutDocumentAdoptionNativeTest {
                 }
 
                 val beforeDelete = library.renderGeneration.value
-                tap("Clear"); tap("Clear LUT")
+                tap("清除"); tap("清除 LUT")
                 await("actual delete and AUTO policy") { !library.contains(selection) && model.lutSelection == "auto" }
                 assertNull(library.packedCube(selection))
                 assertTrue(library.entries.value.isEmpty())
@@ -197,7 +197,7 @@ class LutDocumentAdoptionNativeTest {
                 }
                 scenario.onActivity { model.assist.toggle(MonitorAssistTool.LUT) }
                 val beforeCancel = library.renderGeneration.value
-                tap("Import .cube")
+                tap("导入 .cube")
                 scenario.onActivity { documents.complete(null) }
                 instrumentation.waitForIdleSync()
                 assertEquals(beforeCancel, library.renderGeneration.value)
@@ -271,7 +271,7 @@ class LutDocumentAdoptionNativeTest {
     }
 
     private fun deliver(documents: Documents, file: File) {
-        tap("Import .cube")
+        tap("导入 .cube")
         instrumentation.runOnMainSync { documents.complete(Uri.fromFile(file)) }
     }
     private fun await(label: String, ready: () -> Boolean) {

@@ -61,22 +61,22 @@ data class SettingsColorDot(val name: String, val color: Color)
 object SettingsPalette {
     val highlight: List<SettingsColorDot> =
         listOf(
-            SettingsColorDot("White", LiveDesign.text),
-            SettingsColorDot("Amber", LiveDesign.amber),
-            SettingsColorDot("Red", LiveDesign.rec),
+            SettingsColorDot("白色", LiveDesign.text),
+            SettingsColorDot("琥珀色", LiveDesign.amber),
+            SettingsColorDot("红色", LiveDesign.rec),
         )
     val midtone: List<SettingsColorDot> =
         listOf(
-            SettingsColorDot("Amber", LiveDesign.amber),
-            SettingsColorDot("Cyan", Color(0f, 0.85f, 0.9f)),
-            SettingsColorDot("Green", LiveDesign.good),
+            SettingsColorDot("琥珀色", LiveDesign.amber),
+            SettingsColorDot("青色", Color(0f, 0.85f, 0.9f)),
+            SettingsColorDot("绿色", LiveDesign.good),
         )
     val peaking: List<SettingsColorDot> =
         listOf(
-            SettingsColorDot("White", LiveDesign.text),
-            SettingsColorDot("Blue", Color(64f / 255f, 142f / 255f, 1f)),
-            SettingsColorDot("Red", LiveDesign.rec),
-            SettingsColorDot("Green", LiveDesign.good),
+            SettingsColorDot("白色", LiveDesign.text),
+            SettingsColorDot("蓝色", Color(64f / 255f, 142f / 255f, 1f)),
+            SettingsColorDot("红色", LiveDesign.rec),
+            SettingsColorDot("绿色", LiveDesign.good),
         )
 }
 
@@ -140,7 +140,7 @@ fun PanelCloseButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
             .size(37.dp)
             .panelGlass(CircleShape)
             .settingsClickable(role = Role.Button, onClick = onClick)
-            .semantics { contentDescription = "Close" },
+            .semantics { contentDescription = "关闭" },
         contentAlignment = Alignment.Center,
     ) {
         MonitorIcon(

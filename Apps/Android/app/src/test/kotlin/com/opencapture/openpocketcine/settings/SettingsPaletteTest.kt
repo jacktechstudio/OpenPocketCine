@@ -15,9 +15,9 @@ class SettingsPaletteTest {
     @Test
     fun namedDotsShowTheirPaint() {
         val midtone = SettingsPalette.midtone.associate { it.name to it.color }
-        assertEquals(paint(MonitorZebraPaint.CYAN.rgb), midtone.getValue("Cyan"))
-        assertEquals(LiveDesign.amber, midtone.getValue("Amber"))
-        assertEquals(LiveDesign.amber, SettingsPalette.highlight.single { it.name == "Amber" }.color)
-        assertEquals(paint(MonitorPeakingColor.BLUE.rgb), SettingsPalette.peaking.single { it.name == "Blue" }.color)
+        assertEquals(paint(MonitorZebraPaint.CYAN.rgb), midtone.getValue("青色"))
+        assertEquals(LiveDesign.amber, midtone.getValue("琥珀色"))
+        assertEquals(LiveDesign.amber, SettingsPalette.highlight.single { it.name == "琥珀色" }.color)
+        assertEquals(paint(MonitorPeakingColor.BLUE.rgb), SettingsPalette.peaking.single { it.name == "蓝色" }.color)
     }
 }

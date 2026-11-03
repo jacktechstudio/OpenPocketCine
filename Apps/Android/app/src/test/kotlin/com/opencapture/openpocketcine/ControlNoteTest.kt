@@ -24,7 +24,7 @@ class ControlNoteTest {
         assertNull(note(CommandStage.Failed(CommandFailure.NOT_SENT)))
         assertEquals(MonitorControlModel.CONNECT_FIRST, note(CommandStage.Rejected(CommandRejection.NotConnected)))
         assertEquals(
-            "ISO 800 was not sent: the camera state changed. Try again.",
+            "相机状态已更改，未发送“ISO 800”。请重试。",
             note(CommandStage.Rejected(CommandRejection.StaleEpoch)),
         )
     }

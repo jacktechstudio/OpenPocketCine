@@ -31,7 +31,7 @@ android {
     compileSdk = libs.versions.androidCompileSdk.get().toInt()
 
     defaultConfig {
-        applicationId = "com.opencapture.openpocketcine"
+        applicationId = "com.opencapture.openpocketcine.zhcn"
         minSdk = 29
         targetSdk = 36
         versionCode = resolvedVersionCode

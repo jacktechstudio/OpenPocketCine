@@ -4,5 +4,5 @@
         ".debug"), so the launcher shows two entries. This label names which
         one is the local build; the grayscale launcher foreground in this
         source set is the same signal at a glance. -->
-    <string name="app_name">OpenPocketCine Dev</string>
+    <string name="app_name">OpenPocketCine 中文开发版</string>
 </resources>

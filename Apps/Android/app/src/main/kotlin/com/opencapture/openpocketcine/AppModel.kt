@@ -726,8 +726,8 @@ class AppModel(
             return NearbyCardCopy(
                 FoundCameraIdentity.listTitle(name, model),
                 FoundCameraIdentity.listSubtitle(name, model, found?.model?.family ?: "other") +
-                    if (found?.model?.verified == false) " · unverified" else "",
-                "Needs approval on the camera",
+                    if (found?.model?.verified == false) " · 未验证" else "",
+                "请在相机上确认配对",
             )
         }
         /** The records every earlier build reads, kept mirrored (SHELL-02 D11). */
